@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Emedia library system</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <style>
+/*
+        body {
+            top:20px;
+            background-color:#14a5fa !important;;
+        }
+*/
+        .divContainer{
+            display:table;
+            width:100%;
+            border-spacing:0 5px;
+        }
+
+        .item{
+            display:table-row;
+            height:45px;
+            line-height: 45px;
+            text-align: center;
+
+        }
+
+        .item > div {
+           /* background-color: white;*/
+        }
+
+        .item > div:first-child {
+            border-radius: 10px 0 0 10px;
+            -moz-border-radius: 10px 0 0 10px;
+        }
+
+        .item > div:last-child {
+            border-radius: 0 10px 10px 0;
+            -moz-border-radius: 0 10px 10px 0;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow:hidden;
+            text-align:left;
+        }
+
+        .itemHeader, .itemBody, .itemFlag{
+            display:table-cell;
+        }
+
+        .itemHeader{
+            width:100px;
+        }
+
+        .itemBody{
+            width:150px;
+        }
+
+        .itemFlag{
+            width:30px;
+
+        }
+
+    </style>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/jquery.mobile-1.4.5.css" />
+
+</head>
+
+<body>
+<script data-main="js/main" src="lib/require/require.js"></script>
+
+</body>
+</html>
