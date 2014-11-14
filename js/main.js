@@ -92,6 +92,18 @@ define([
         // The "app" dependency is passed in as "App"
         // Again, the other dependencies passed in are not "AMD" therefore don't pass a parameter to this function
         console.log('Dental create 2');
+        $(document).bind("mobileinit", function () {
+            console.log('mobileinit start');
+            $.mobile.ajaxEnabled = false;
+            $.mobile.linkBindingEnabled = false;
+            $.mobile.hashListeningEnabled = false;
+            $.mobile.pushStateEnabled = false;
+
+            // Remove page from DOM when it's being replaced
+            $('div[data-role="page"]').live('pagehide', function (event, ui) {
+                $(event.currentTarget).remove();
+            });
+        });
 
         App.initialize();
     });
