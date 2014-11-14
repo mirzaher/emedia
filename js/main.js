@@ -29,14 +29,14 @@ require.config({
          deps : ['jquery', 'underscore', 'backbone', 'json2'],
          exports: 'Marionette'
         },
-        'jquerymobile': {
-            deps: ['jquery']
-        }
+        'jquery.mobile-config': ['jquery'],
+        'jquery.mobile': ['jquery','jquery.mobile-config']
     },
     paths: {
         jquery: '../lib/jquery/jquery',
         json2: '../lib/json2',
         jquerymobile: '../lib/jquery/mobile/jquery.mobile-1.4.5',
+        "jquery.mobile-config": '../js/jquery.mobile-config',
         underscore: '../lib/backbone/underscore',
         "underscore.extension": '../lib/backbone/underscore.extension',
         backbone: '../lib/backbone/backbone',
@@ -92,19 +92,6 @@ define([
         // The "app" dependency is passed in as "App"
         // Again, the other dependencies passed in are not "AMD" therefore don't pass a parameter to this function
         console.log('Dental create 2');
-        $(document).bind("mobileinit", function () {
-            console.log('mobileinit start');
-            $.mobile.ajaxEnabled = false;
-            $.mobile.linkBindingEnabled = false;
-            $.mobile.hashListeningEnabled = false;
-            $.mobile.pushStateEnabled = false;
-
-            // Remove page from DOM when it's being replaced
-            $('div[data-role="page"]').live('pagehide', function (event, ui) {
-                $(event.currentTarget).remove();
-            });
-        });
-
         App.initialize();
     });
 });
