@@ -63,18 +63,6 @@ define(['marionette',
 
         Dental.addInitializer(function() {
             console.log('init1');
-            $(document).bind("mobileinit", function () {
-                console.log('mobileinit start');
-                $.mobile.ajaxEnabled = false;
-                $.mobile.linkBindingEnabled = false;
-                $.mobile.hashListeningEnabled = false;
-                $.mobile.pushStateEnabled = false;
-
-                // Remove page from DOM when it's being replaced
-                $('div[data-role="page"]').live('pagehide', function (event, ui) {
-                    $(event.currentTarget).remove();
-                });
-            });
 
             Dental.AppRouter.main = new mainRouter({
                 controller: mainController
