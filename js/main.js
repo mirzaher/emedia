@@ -35,7 +35,7 @@ require.config({
     paths: {
         jquery: '../lib/jquery/jquery',
         json2: '../lib/json2',
-        jquerymobile: '../lib/jquery/mobile/jquery.mobile-1.4.5',
+        'jquery.mobile': '../lib/jquery/mobile/jquery.mobile-1.4.5',
         "jquery.mobile-config": '../js/jquery.mobile-config',
         underscore: '../lib/backbone/underscore',
         "underscore.extension": '../lib/backbone/underscore.extension',
@@ -79,6 +79,8 @@ define([
 // Load our app module and pass it to our definition function
         "app",
         "config",
+
+        "jquery.mobile",
         "collections/baseCollection",
         "models/baseModel"
 
@@ -92,7 +94,11 @@ define([
         // The "app" dependency is passed in as "App"
         // Again, the other dependencies passed in are not "AMD" therefore don't pass a parameter to this function
         console.log('Dental create 2');
-        App.initialize();
+        $(function(){
+            console.log('Dom ready');
+            App.initialize();
+        });
+
     });
 });
 
