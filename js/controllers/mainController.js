@@ -87,37 +87,42 @@ define(['jquery',
 
 
             var template =
-                '<div data-role="page" data-theme="b">'+
                 '<header id="header" data-role="header"></header>'+
                 '<div id="main" data-role="content">'+
                 '<ul data-role="listview" data-inset="true"></ul>'+
                 '</div>'+
                 '<footer data-role="footer" class="footer">'+
-                '</footer>'+
-                '</div>';
+                '</footer>';
 
             var View = Backbone.Marionette.CompositeView.extend({
                 template : _.template(template),
                 childViewContainer : '#main ul',
                 childView:ClientItemView,
-                collection:Dental.collections.clientCollection
+                collection:Dental.collections.clientCollection,
+                events:{
+                    'pagehide':'_onPageHide'
+                },
+
+                _onPageHide:function(){
+                    this.remove();
+                }
             });
 
-            setTimeout(function(){
-                self.changePage(new View());
-            },5000);
-
+            //self.changePage(new View());
 
 
             Dental.collections.clientCollection.fetch({
                 crossDomain: true,
                 dataType: "jsonp"
 
-            });
+            }).done(function(){
+            self.changePage(new View());
+        });
         },
 
         showPlayers: function(clientId) {
             console.log("showPlayers");
+            var self = this;
             var PlayerItemView = Marionette.ItemView.extend({
                 model:Dental.models.player,
                 template:_.template(
@@ -132,42 +137,62 @@ define(['jquery',
 
             });
 
-            var PlayersView = Marionette.CollectionView.extend({
-                tagName:'ul data-role="listview" data-inset="true"',
+            var template =
+                '<header id="header" data-role="header"></header>'+
+                '<div id="main" data-role="content">'+
+                '<ul data-role="listview" data-inset="true"></ul>'+
+                '</div>'+
+                '<footer data-role="footer" class="footer">'+
+                '</footer>';
+
+            var View = Backbone.Marionette.CompositeView.extend({
+                template : _.template(template),
+                childViewContainer : '#main ul',
                 childView:PlayerItemView,
-                collection:Dental.collections.playerCollection
+                collection:Dental.collections.playerCollection,
+                events:{
+                    'pagehide':'_onPageHide'
+                },
+
+                _onPageHide:function(){
+                    this.remove();
+                }
             });
+
+
+
             Dental.collections.playerCollection.clientId = clientId;
 
             Dental.collections.playerCollection.fetch({
                 crossDomain: true,
                 dataType: "jsonp"
+            }).done(function(){
+                self.changePage(new View());
             });
 
-            var view = new PlayersView();
-//            Dental.main.show(view);
-
-           this.changePage(view);
         },
 
         changePage:function (page) {
-            console.log('page', page);
-
-            //$(page.el).attr('data-role', 'page');
-            //$(page.el).attr('data-theme', 'b');
-            //$(page.el).attr('data-content-theme', 'b');
-
+            page.on("pagehide", function(){
+                alert("taj sm");
+            });
             page.render();
+            //Dental.body.show(page, { preventClose: true });
+            console.log('page', page, $(page.el));
+
             $('body').append($(page.el));
-            var transition = "slidefade";
-            //var transition = $.mobile.defaultPageTransition;
+            $(page.el).attr('data-role', 'page');
+            $(page.el).attr('data-theme', 'b');
+            $(page.el).attr('data-content-theme', 'b');
+
+            var transition = "slide";
 
             if (this.firstPage) {
                 transition = 'none';
                 this.firstPage = false;
             }
             $.mobile.changePage($(page.el), {changeHash:false, transition: transition});
-            //$.mobile.changePage($(Dental.main.el), {changeHash:false, transition: transition});
+
 
         }
 

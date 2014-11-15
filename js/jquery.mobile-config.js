@@ -23,17 +23,18 @@ $(document).bind("mobileinit", function () {
 
 
     // Setting #container div as a jqm pageContainer
-    $.mobile.pageContainer = $('#main');
+    //$.mobile.pageContainer = $('#main');
     // Setting default page transition to slide
     $.mobile.defaultPageTransition = 'slide';
     // Setting fallback transition for browsers that don't support 3D transforms
     $.mobile.transitionFallbacks.slideout = "none";
-/*
+    console.log('remove page ispred');
     // Remove page from DOM when it's being replaced
-    $('div[data-role="page"],div[data-role="dialog"]').live('pagehide', function (event, ui) {
+    $('div[data-role="page"],div[data-role="dialog"]').on('pagehide', function (event, ui) {
+        console.log('remove page');
         if (!window.dialog) {
             $(event.currentTarget).remove();
         }
     });
-*/
+
 });
