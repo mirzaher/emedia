@@ -10,7 +10,7 @@ define(['jquery',
     'bootstrap',
     'marionette',
     'layouts/mainLayout',
-    'typeahead', 'jquerymobile'
+    'typeahead', 'jquery.mobile'
 ], function($, Backbone, Bootstrap, Marionette, MainLayout){
 
     return {
@@ -96,7 +96,7 @@ define(['jquery',
                     console.log("abc", a,b,c);
                 },
                 success:function(a, b, c){
-                    console.log("abc success", a,b,c);
+                    //console.log("abc success", a,b,c);
                 }
 
             }).done(function(){
@@ -108,9 +108,9 @@ define(['jquery',
 
         changePage:function (page) {
             console.log('page', page);
-            $(page.el).attr('data-role', 'page');
+            /*$(page.el).attr('data-role', 'page');
             $(page.el).attr('data-theme', 'b');
-            $(page.el).attr('data-content-theme', 'b');
+            $(page.el).attr('data-content-theme', 'b');*/
             page.render();
             $('body').append($(page.el));
             console.log('page el', page.el);

@@ -35,7 +35,7 @@ require.config({
     paths: {
         jquery: '../lib/jquery/jquery',
         json2: '../lib/json2',
-        jquerymobile: '../lib/jquery/mobile/jquery.mobile-1.4.5',
+        'jquery.mobile': '../lib/jquery/mobile/jquery.mobile-1.4.5',
         "jquery.mobile-config": '../js/jquery.mobile-config',
         underscore: '../lib/backbone/underscore',
         "underscore.extension": '../lib/backbone/underscore.extension',

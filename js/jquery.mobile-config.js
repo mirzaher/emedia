@@ -9,8 +9,10 @@ $(document).bind("mobileinit", function () {
 
     $.mobile.loader.prototype.options.text = "";
     $.mobile.loader.prototype.options.textVisible = true;
-    $.mobile.loader.prototype.options.theme = "a";
+    $.mobile.loader.prototype.options.theme = "b";
     $.mobile.loader.prototype.options.html = "";
+
+    $.mobile.page.prototype.options.theme = "b";
 
     $.event.special.swipe.horizontalDistanceThreshold = 10;
     $.event.special.swipe.verticalDistanceThreshold = 150;
@@ -26,12 +28,12 @@ $(document).bind("mobileinit", function () {
     $.mobile.defaultPageTransition = 'slide';
     // Setting fallback transition for browsers that don't support 3D transforms
     $.mobile.transitionFallbacks.slideout = "none";
-
+/*
     // Remove page from DOM when it's being replaced
     $('div[data-role="page"],div[data-role="dialog"]').live('pagehide', function (event, ui) {
         if (!window.dialog) {
             $(event.currentTarget).remove();
         }
     });
-
+*/
 });

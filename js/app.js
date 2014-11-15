@@ -17,6 +17,8 @@ define(['marionette',
         Dental.AppRouter = {};
         Dental.AppControllers = {};
         $.ajaxSetup({
+            beforeSend: function() { $.mobile.loading('show'); },
+            complete: function() { $.mobile.loading('hide'); },
             error : function(jqXHR, textStatus, errorThrown) {
                 alert("Error: " + textStatus + ": " + errorThrown);
             },
