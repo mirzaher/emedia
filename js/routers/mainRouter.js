@@ -19,7 +19,7 @@ define([
 
         appRoutes: {
             "": "showHome",
-            "players": "showPlayers"
+            "players/:clientId": "showPlayers"
         },
 
         before: function( route ) {
