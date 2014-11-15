@@ -16,6 +16,13 @@ define(['marionette',
 
         Dental.AppRouter = {};
         Dental.AppControllers = {};
+        Dental.addRegions({
+            body:'body',
+            header: '#header',
+            main: '#main',
+            footer: '#footer'
+        });
+
         $.ajaxSetup({
             beforeSend: function() { $.mobile.loading('show'); },
             complete: function() { $.mobile.loading('hide'); },

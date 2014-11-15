@@ -9,7 +9,7 @@ var AppConfig = {
     /* Base application URI */
     BaseUri: '',
     /* REST service URI */
-    RESTUri: 'http://server.enamedia.ba/api/',
+   RESTUri: 'http://server.enamedia.ba/api/',
     //RESTUri: 'http://emedia.enamedia.ba/api/',
     //RESTUri: 'http://localhost/api/',
     AppId: '450096931690547',
