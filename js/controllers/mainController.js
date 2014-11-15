@@ -19,6 +19,22 @@ define(['jquery',
             Dental.views = {};
             Dental.collection = {};
             this.firstPage = true;
+            var MojModel = Backbone.Model.extend({
+                defaults:{
+                    id:null,
+                    NAME:undefined
+                },
+                url: appConfig.RESTUri +'players'
+
+            });
+
+            var Collection = Backbone.Collection.extend({
+                model:MojModel,
+                url: appConfig.RESTUri +'players'
+            });
+
+            this.collection = new Collection();
+
         },
 
         showHome:function(){
@@ -51,21 +67,6 @@ define(['jquery',
         showPlayers: function() {
             console.log("showPlayers");
 
-            var MojModel = Backbone.Model.extend({
-                defaults:{
-                    id:null,
-                    NAME:undefined
-                },
-                url: appConfig.RESTUri +'players'
-
-            });
-
-            var Collection = Backbone.Collection.extend({
-                model:MojModel,
-                url: appConfig.RESTUri +'players'
-            });
-
-            var collection = new Collection();
             var Itemview = Marionette.ItemView.extend({
                 template:_.template(
                     '<div class="col-xs-2">'+
@@ -83,25 +84,28 @@ define(['jquery',
                 tagName:'div',
                 className:'divContainer',
                 childView:Itemview,
-                collection:collection
+                collection:this.collection
             });
 
 
             //Dental.views.mainLayout.middle.show(new Masteriew());
             var self = this;
-            collection.fetch({
-                crossDomain: true,
-                dataType:"jsonp",
-                error:function(a, b, c){
-                    console.log("abc", a,b,c);
-                },
-                success:function(a, b, c){
-                    //console.log("abc success", a,b,c);
-                }
+            if(this.collection.length == 0) {
+                this.collection.fetch({
+                    crossDomain: true,
+                    dataType: "jsonp",
+                    error: function (a, b, c) {
+                        console.log("abc", a, b, c);
+                    },
+                    success: function (a, b, c) {
+                        //console.log("abc success", a,b,c);
+                    }
 
-            }).done(function(){
+                }).done(function () {
+                    self.changePage(new Masteriew());
+                });
+            }else
                 self.changePage(new Masteriew());
-            });
 
 
         },
