@@ -96,6 +96,14 @@ define([
         console.log('Dental create 2');
         $(function(){
             console.log('Dom ready');
+            $(document).bind('keydown', function(event) {
+                if (event.keyCode == 27) {
+                    // Prevent default (disable the back button behavior)
+                    event.preventDefault();
+                    alert('back');
+                    // Your code to show another page or whatever...
+                }
+            });
             App.initialize();
         });
 
