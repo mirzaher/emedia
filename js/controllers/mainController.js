@@ -14,74 +14,98 @@ define(['jquery',
 ], function($, Backbone, Bootstrap, Marionette, MainLayout){
 
     return {
-        start: function(){
+        start: function () {
             console.log('start controller');
+            var self = this;
             Dental.views = {};
             Dental.collections = {};
-            Dental.models ={};
+            Dental.models = {};
             this.firstPage = true;
             var player = Backbone.Model.extend({
-                defaults:{
-                    id:null,
-                    NAME:undefined,
-                    ALIVE_STATUS:'N/A'
+                defaults: {
+                    id: null,
+                    NAME: undefined,
+                    ALIVE_STATUS: '',
+                    imageStatusClass: 'MachineOffline'
                 },
-                url: appConfig.RESTUri +'players'
+                url: appConfig.RESTUri + 'players'
             });
 
             var client = Backbone.Model.extend({
-                defaults:{
-                    id:null,
-                    NAME:undefined
+                defaults: {
+                    id: null,
+                    NAME: undefined
                 },
-                url: appConfig.RESTUri +'players'
+                url: appConfig.RESTUri + 'players'
             });
 
             Dental.models.client = client;
             Dental.models.player = player;
 
             var PlayerCollection = Backbone.Collection.extend({
-                model:player,
-               // url: appConfig.RESTUri +'players/{clientId}',
+                model: player,
+                // url: appConfig.RESTUri +'players/{clientId}',
                 url: function () {
-                    return appConfig.RESTUri +'players/'+ this.clientId;
+                    return appConfig.RESTUri + 'players/' + this.clientId;
                 }
 
             });
 
             var ClientCollection = Backbone.Collection.extend({
-                model:client,
-                url: appConfig.RESTUri +'clients'
+                model: client,
+                url: appConfig.RESTUri + 'clients'
             });
 
             var PlayerAliveCollection = Backbone.Collection.extend({
                 url: function () {
-                    return appConfig.RESTUri +'playersAlive/'+ this.clientId;
+                    return appConfig.RESTUri + 'playersAlive/' + this.clientId;
                 }
             });
 
             Dental.collections.playerCollection = new PlayerCollection();
             Dental.collections.clientCollection = new ClientCollection();
             Dental.collections.playerAliveCollection = new PlayerAliveCollection();
-            var alive = function(){
-                Dental.collections.playerAliveCollection.clientId = Dental.collections.playerCollection.clientId();
-                Dental.collections.playerAliveCollection.fetch().done(function(){
-                    _.each(Dental.collections.playerCollection.models, function(m){
-                        m.set('ALIVE_STATUS', m.NAME);
-                    })
-                });
-            }
+
+            setInterval(self.alive, 30000);
+
 
         },
 
-        showHome:function(){
+        alive: function () {
+            if (self.viewIsClosed)
+                return;
+            var id = Dental.collections.playerCollection.clientId;
+            var c = Dental.collections.playerAliveCollection;
+            if (id) {
+                c.clientId = id;
+                c.fetch({
+                    crossDomain: true,
+                    dataType: "jsonp"
+                }).done(function () {
+                    _.each(Dental.collections.playerCollection.models, function (m) {
+                        var model = c.find(function (model) {
+                            return model.get('id') == m.get('id');
+                        });
+                        var status = model ? model.get('NAME') : '';
+                        m.set('ALIVE_STATUS', status);
+                        if (status && status.indexOf("Online") >= 0)
+                            m.set('imageStatusClass', 'MachineOnline');
+                        else
+                            m.set('imageStatusClass', 'MachineOffline');
+
+                    })
+                });
+            }
+    },
+
+    showHome:function(){
             var self = this;
             var ClientItemView = Marionette.ItemView.extend({
                 model:Dental.models.client,
                 template:_.template(
                     '<a href="#"><%=NAME%></a>'
                 ),
-                tagName:'li',
+                tagName:'li data-icon="arrow-r"',
                 events:{
                     "click a":function(e){
                         console.log('ClientItemView click');
@@ -145,14 +169,6 @@ define(['jquery',
                 }
             });
 
-            //self.changePage(new View());
-           /* setTimeout(function(){
-                self.changePage(new View());
-            },5000);
-
-*/
-
-            Dental.body.show(new View());
             Dental.collections.clientCollection.fetch({
                 crossDomain: true,
                 dataType: "jsonp"
@@ -168,46 +184,92 @@ define(['jquery',
             var PlayerItemView = Marionette.ItemView.extend({
                 model:Dental.models.player,
                 template:_.template(
-                    ' <span> <%=ALIVE_STATUS%></span> <a href="#"><%=NAME%></a>'
+                    '<a href="#" class="ui-btn" style="padding-left:22px">'+
+                    '<div class="SpriteIcons <%=imageStatusClass%>"></div>'+
+                    '   <%=NAME%> ' +
+                    '</a>'+
+                    '<p class="ui-li-aside"><strong><%=ALIVE_STATUS%></strong></p>'
                 ),
-                tagName:'li',
+                tagName:'li data-icon="arrow-r"',
                 events:{
                     "click a":function(e){
                         console.log('ClientItemView click');
                     }
+                },
+                initialize: function() {
+                    this.listenTo(this.model, 'change', this.render);
                 }
 
             });
 
-            var PlayersView = Marionette.CollectionView.extend({
-                tagName:'ul data-role="listview" data-inset="true"',
-                childView:PlayerItemView,
-                collection:Dental.collections.playerCollection
-            });
-            Dental.collections.playerCollection.clientId = clientId;
+            var template =
+                // '<header id="header" data-role="header"></header>'+
+                '<div data-role="header" style="overflow:hidden;">'+
+                '   <h1>Im a header</h1>'+
+                '<a href="#" data-icon="gear" class="ui-btn-right">Options</a>'+
+                '  <div data-role="navbar">'+
+                '      <ul data-role="listview" data-split-icon="gear" data-split-theme="b" data-inset="true">'+
+                '          <li><a href="#">One</a></li>'+
+                '          <li><a href="#">Two</a></li>'+
+                '          <li><a href="#">Three</a></li>'+
+                '      </ul>'+
+                ' </div><!-- /navbar -->'+
+                '</div><!-- /header -->'+
+                '<div id="main" data-role="content">'+
+                '<ul data-role="listview" data-inset="true"></ul>'+
+                '</div>'+
+                '<footer data-role="footer" class="footer">'+
+                '<div data-role="footer">'+
+                '   <div data-role="navbar">'+
+                '           <ul>'+
+                '               <li><a href="#" data-icon="grid">Summary</a></li>'+
+                '               <li><a href="#" data-icon="star" class="ui-btn-active">Favs</a></li>'+
+                '               <li><a href="#" data-icon="gear">Setup</a></li>'+
+                '           </ul>'+
+                '       </div><!-- /navbar -->'+
+                '   </div><!-- /footer -->'+
+                '</footer>';
 
+            var PlayersView = Marionette.CompositeView.extend({
+                template:_.template(template),// _.template('<ul data-role="listview" data-split-icon="gear" data-split-theme="b" data-inset="true"></ul>'),
+                childView:PlayerItemView,
+                childViewContainer:'#main ul',
+                collection:Dental.collections.playerCollection,
+                events:{
+                    'pagehide':'_onPageHide'
+                },
+
+                _onPageHide:function(){
+                    self.viewIsClosed = true;
+                    this.remove();
+                }
+            });
+
+            Dental.collections.playerCollection.clientId = clientId;
+            self.viewIsClosed = false;
             Dental.collections.playerCollection.fetch({
                 crossDomain: true,
                 dataType: "jsonp"
+            }).done(function(){
+                self.alive();
+                setTimeout(function(){
+                    self.changePage(new PlayersView());
+                },100)
+
             });
 
-            var view = new PlayersView();
-//            Dental.main.show(view);
-
-           this.changePage(view);
         },
 
         changePage:function (page) {
             console.log('page', page);
 
-            //$(page.el).attr('data-role', 'page');
+            $(page.el).attr('data-role', 'page');
             //$(page.el).attr('data-theme', 'b');
             //$(page.el).attr('data-content-theme', 'b');
 
             page.render();
             $('body').append($(page.el));
             var transition = "slidefade";
-            //var transition = $.mobile.defaultPageTransition;
 
             if (this.firstPage) {
                 transition = 'none';

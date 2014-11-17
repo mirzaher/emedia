@@ -45,6 +45,13 @@
             text-align:left;
         }
 
+        td {
+            white-space: nowrap !important;
+            text-overflow: ellipsis !important;
+            overflow:hidden !important;
+            text-align:left !important;
+        }
+
         .itemHeader, .itemBody, .itemFlag{
             display:table-cell;
         }
@@ -61,7 +68,26 @@
             width:30px;
 
         }
+.SpriteIcons{
+    background-image: url("/img/sprite.png");
+    border:0;width:20px;height:20px;
+    display:inline-block
+}
+.SpriteIcons.MachineOnline{
+    background-position:-66px -23px
+}
 
+.SpriteIcons.MachineOnline.Alert{
+    background-position:-42px -91px
+}
+
+.SpriteIcons.MachineOnline.Acknowledged{
+    background-position:-2px -113px
+}
+
+.SpriteIcons.MachineOffline{
+    background-position:-106px -45px
+}
     </style>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/jquery.mobile-1.4.5.css" />
