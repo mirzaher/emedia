@@ -104,22 +104,48 @@ define(['jquery',
 
 
             var template =
-                '<div data-role="page" data-theme="b">'+
-                '<header id="header" data-role="header"></header>'+
+               // '<header id="header" data-role="header"></header>'+
+                '<div data-role="header" style="overflow:hidden;">'+
+                 '   <h1>Im a header</h1>'+
+                '<a href="#" data-icon="gear" class="ui-btn-right">Options</a>'+
+                 '  <div data-role="navbar">'+
+                 '      <ul>'+
+                 '          <li><a href="#">One</a></li>'+
+                 '          <li><a href="#">Two</a></li>'+
+                 '          <li><a href="#">Three</a></li>'+
+                 '      </ul>'+
+                 ' </div><!-- /navbar -->'+
+                '</div><!-- /header -->'+
                 '<div id="main" data-role="content">'+
                 '<ul data-role="listview" data-inset="true"></ul>'+
                 '</div>'+
                 '<footer data-role="footer" class="footer">'+
-                '</footer>'+
-                '</div>';
+                '<div data-role="footer">'+
+            '   <div data-role="navbar">'+
+            '           <ul>'+
+            '               <li><a href="#" data-icon="grid">Summary</a></li>'+
+            '               <li><a href="#" data-icon="star" class="ui-btn-active">Favs</a></li>'+
+            '               <li><a href="#" data-icon="gear">Setup</a></li>'+
+            '           </ul>'+
+            '       </div><!-- /navbar -->'+
+            '   </div><!-- /footer -->'+
+                '</footer>';
 
             var View = Backbone.Marionette.CompositeView.extend({
                 template : _.template(template),
                 childViewContainer : '#main ul',
                 childView:ClientItemView,
-                collection:Dental.collections.clientCollection
+                collection:Dental.collections.clientCollection,
+                events:{
+                    'pagehide':'_onPageHide'
+                },
+
+                _onPageHide:function(){
+                    this.remove();
+                }
             });
 
+            //self.changePage(new View());
            /* setTimeout(function(){
                 self.changePage(new View());
             },5000);
@@ -131,11 +157,14 @@ define(['jquery',
                 crossDomain: true,
                 dataType: "jsonp"
 
-            });
+            }).done(function(){
+            self.changePage(new View());
+        });
         },
 
         showPlayers: function(clientId) {
             console.log("showPlayers");
+            var self = this;
             var PlayerItemView = Marionette.ItemView.extend({
                 model:Dental.models.player,
                 template:_.template(

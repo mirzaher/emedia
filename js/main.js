@@ -79,6 +79,8 @@ define([
 // Load our app module and pass it to our definition function
         "app",
         "config",
+
+        "jquery.mobile",
         "collections/baseCollection",
         "models/baseModel"
 
@@ -92,7 +94,19 @@ define([
         // The "app" dependency is passed in as "App"
         // Again, the other dependencies passed in are not "AMD" therefore don't pass a parameter to this function
         console.log('Dental create 2');
-        App.initialize();
+        $(function(){
+            console.log('Dom ready');
+            $(document).bind('keydown', function(event) {
+                if (event.keyCode == 27) {
+                    // Prevent default (disable the back button behavior)
+                    event.preventDefault();
+                    alert('back');
+                    // Your code to show another page or whatever...
+                }
+            });
+            App.initialize();
+        });
+
     });
 });
 
