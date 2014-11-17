@@ -23,7 +23,8 @@ define(['jquery',
             var player = Backbone.Model.extend({
                 defaults:{
                     id:null,
-                    NAME:undefined
+                    NAME:undefined,
+                    ALIVE_STATUS:'N/A'
                 },
                 url: appConfig.RESTUri +'players'
             });
@@ -53,8 +54,24 @@ define(['jquery',
                 url: appConfig.RESTUri +'clients'
             });
 
+            var PlayerAliveCollection = Backbone.Collection.extend({
+                url: function () {
+                    return appConfig.RESTUri +'playersAlive/'+ this.clientId;
+                }
+            });
+
             Dental.collections.playerCollection = new PlayerCollection();
             Dental.collections.clientCollection = new ClientCollection();
+            Dental.collections.playerAliveCollection = new PlayerAliveCollection();
+            var alive = function(){
+                Dental.collections.playerAliveCollection.clientId = Dental.collections.playerCollection.clientId();
+                Dental.collections.playerAliveCollection.fetch().done(function(){
+                    _.each(Dental.collections.playerCollection.models, function(m){
+                        m.set('ALIVE_STATUS', m.NAME);
+                    })
+                });
+            }
+
         },
 
         showHome:function(){
@@ -62,7 +79,7 @@ define(['jquery',
             var ClientItemView = Marionette.ItemView.extend({
                 model:Dental.models.client,
                 template:_.template(
-                    ' <a href="#"><%=NAME%></a>'
+                    '<a href="#"><%=NAME%></a>'
                 ),
                 tagName:'li',
                 events:{
@@ -103,12 +120,13 @@ define(['jquery',
                 collection:Dental.collections.clientCollection
             });
 
-            setTimeout(function(){
+           /* setTimeout(function(){
                 self.changePage(new View());
             },5000);
 
+*/
 
-
+            Dental.body.show(new View());
             Dental.collections.clientCollection.fetch({
                 crossDomain: true,
                 dataType: "jsonp"
@@ -121,7 +139,7 @@ define(['jquery',
             var PlayerItemView = Marionette.ItemView.extend({
                 model:Dental.models.player,
                 template:_.template(
-                    ' <a href="#"><%=NAME%></a>'
+                    ' <span> <%=ALIVE_STATUS%></span> <a href="#"><%=NAME%></a>'
                 ),
                 tagName:'li',
                 events:{
