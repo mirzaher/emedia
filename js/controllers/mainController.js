@@ -26,7 +26,7 @@ define(['jquery',
                     id: null,
                     NAME: undefined,
                     ALIVE_STATUS: '',
-                    imageStatusClass: 'MachineOffline'
+                    imageStatus: 'icon-gray'
                 },
                 url: appConfig.RESTUri + 'players'
             });
@@ -89,9 +89,9 @@ define(['jquery',
                         var status = model ? model.get('NAME') : '';
                         m.set('ALIVE_STATUS', status);
                         if (status && status.indexOf("Online") >= 0)
-                            m.set('imageStatusClass', 'MachineOnline');
+                            m.set('imageStatus', 'icon-green');
                         else
-                            m.set('imageStatusClass', 'MachineOffline');
+                            m.set('imageStatus', 'icon-gray');
 
                     })
                 });
@@ -177,15 +177,19 @@ define(['jquery',
             self.changePage(new View());
         });
         },
-
+/*
+*
+* <a href="#">
+         <img src="../_assets/img/album-bb.jpg">
+     <h2>Broken Bells</h2>
+     <p>Broken Bells</p></a>*/
         showPlayers: function(clientId) {
             console.log("showPlayers");
             var self = this;
             var PlayerItemView = Marionette.ItemView.extend({
                 model:Dental.models.player,
                 template:_.template(
-                    '<a href="#" class="ui-btn" style="padding-left:22px">'+
-                    '<div class="SpriteIcons <%=imageStatusClass%>"></div>'+
+                    '<a href="#" class="ui-btn ui-btn-icon-left <%=imageStatus%>">'+
                     '   <%=NAME%> ' +
                     '</a>'+
                     '<p class="ui-li-aside"><strong><%=ALIVE_STATUS%></strong></p>'
