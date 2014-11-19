@@ -76,7 +76,7 @@ define(['jquery',
 
         },
 
-        alive: function () {
+        alive: function (callback) {
             if (self.viewIsClosed)
                 return;
             var id = Dental.collections.playerCollection.clientId;
@@ -87,6 +87,7 @@ define(['jquery',
                     crossDomain: true,
                     dataType: "jsonp"
                 }).done(function () {
+                    $.mobile.loading('show');
                     _.each(Dental.collections.playerCollection.models, function (m) {
                         var model = c.find(function (model) {
                             return model.get('id') == m.get('id');
@@ -105,10 +106,14 @@ define(['jquery',
                         }
                     });
 
+                    console.log('beffore sort');
                     Dental.collections.playerCollection.sort();
-                    $('.ui-page-active').trigger('create');
+                    console.log('after sort');
+                    $.mobile.loading('hide');
+                    if(callback)
+                        callback();
 
-                    });
+                });
             }
     },
 
@@ -154,7 +159,7 @@ define(['jquery',
                  ' </div><!-- /navbar -->'+
                 '</div><!-- /header -->'+
                 '<div id="main" data-role="content">'+
-                '<ul data-role="listview" data-inset="true"></ul>'+
+                '<ul data-role="listview"></ul>'+
                 '</div>'+
                 '<footer data-role="footer" class="footer">'+
                 '<div data-role="footer">'+
@@ -176,11 +181,13 @@ define(['jquery',
                     'pagehide':'_onPageHide',
                     'click [data-role=header]>[data-role=navbar]>ul>li':function()
                     {alert('tajsam');}
+
                 },
 
                 _onPageHide:function(){
                     this.remove();
                 }
+
             });
 
             Dental.collections.clientCollection.fetch({
@@ -221,12 +228,11 @@ define(['jquery',
             });
 
             var template =
-                // '<header id="header" data-role="header"></header>'+
-                '<div data-role="header">'+
+                 '<div id="header" data-role="header">'+
                 '   <h1><%=onlineMsg%> <%=offlineMsg%></h1>'+
-                '</div><!-- /header -->'+
+                ' </div>'+
                 '<div id="main" data-role="content">'+
-                '<ul data-role="listview" data-inset="true"></ul>'+
+                '<ul data-role="listview" ></ul>'+
                 '</div>'+
                 '<footer data-role="footer" class="footer">'+
                 '<div data-role="footer">'+
@@ -247,6 +253,10 @@ define(['jquery',
                 collection:Dental.collections.playerCollection,
                 events:{
                     'pagehide':'_onPageHide'
+                },
+
+                initialize: function() {
+                    this.listenTo(this.collection, 'sort', this.render);
                 },
 
                 serializeData:function(){
@@ -279,7 +289,14 @@ define(['jquery',
                 _onPageHide:function(){
                     self.viewIsClosed = true;
                     this.remove();
+                },
+
+                onRender:function(a, b, c){
+                    console.log('onRender', a, b, c);
+                    if(!this.isFirstRender)
+                    $(this.el).trigger('create');
                 }
+
             });
 
             Dental.collections.playerCollection.clientId = clientId;
@@ -288,33 +305,37 @@ define(['jquery',
                 crossDomain: true,
                 dataType: "jsonp"
             }).done(function(){
-                self.alive();
-                setTimeout(function(){
-                    self.changePage(new PlayersView());
-                },100)
-
+                console.log('onCallback');
+                self.alive(function(){
+                    var view = new PlayersView();
+                    view.isFirstRender = true;
+                    self.changePage(view);
+                    view.isFirstRender = false;
+                })
             });
 
         },
 
         changePage:function (page) {
             console.log('page', page);
+            var self = this;
 
             $(page.el).attr('data-role', 'page');
             //$(page.el).attr('data-theme', 'b');
             //$(page.el).attr('data-content-theme', 'b');
+            page.render(afterRender);
 
-            page.render();
-            $('body').append($(page.el));
-            var transition = "slidefade";
+            function afterRender() {
+                $('body').append($(page.el));
+                var transition = "slidefade";
 
-            if (this.firstPage) {
-                transition = 'none';
-                this.firstPage = false;
+                if (self.firstPage) {
+                    transition = 'none';
+                    self.firstPage = false;
+                }
+                $.mobile.changePage($(page.el), {changeHash:false, transition: transition});
             }
-            $.mobile.changePage($(page.el), {changeHash:false, transition: transition});
-            //$.mobile.changePage($(Dental.main.el), {changeHash:false, transition: transition});
-
+            setTimeout(afterRender, 1000);
         }
 
     };
