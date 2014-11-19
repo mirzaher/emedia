@@ -25,8 +25,8 @@ define(['jquery',
                 defaults: {
                     id: null,
                     NAME: undefined,
-                    ALIVE_STATUS: '',
-                    imageStatus: 'icon-gray'
+                    STATUS: {STATUS_NAME:'', index:-1},
+                    imageStatusIcon: 'icon-gray'
                 },
                 url: appConfig.RESTUri + 'players'
             });
@@ -47,6 +47,11 @@ define(['jquery',
                 // url: appConfig.RESTUri +'players/{clientId}',
                 url: function () {
                     return appConfig.RESTUri + 'players/' + this.clientId;
+                },
+
+                comparator:function(model){
+                    var status = model.get('STATUS');
+                    return status ? status.index + model.get('NAME'):model.get('NAME');
                 }
 
             });
@@ -86,15 +91,24 @@ define(['jquery',
                         var model = c.find(function (model) {
                             return model.get('id') == m.get('id');
                         });
-                        var status = model ? model.get('NAME') : '';
-                        m.set('ALIVE_STATUS', status);
-                        if (status && status.indexOf("Online") >= 0)
-                            m.set('imageStatus', 'icon-green');
-                        else
-                            m.set('imageStatus', 'icon-gray');
+                        var status = model ? model.get('STATUS') : undefined;
+                        if (status) {
+                            m.set('STATUS', status, {silent: true});
+                            if (status.STATUS_NAME.indexOf("Online") >= 0)
+                                m.set('imageStatusIcon', 'icon-green', {silent: true});
+                            else {
+                                if (status.index == 1)
+                                    m.set('imageStatusIcon', 'icon-blue', {silent: true});
+                                else if (status.index == 2)
+                                    m.set('imageStatusIcon', 'icon-gray', {silent: true});
+                            }
+                        }
+                    });
 
-                    })
-                });
+                    Dental.collections.playerCollection.sort();
+                    $('.ui-page-active').trigger('create');
+
+                    });
             }
     },
 
@@ -129,14 +143,13 @@ define(['jquery',
 
             var template =
                // '<header id="header" data-role="header"></header>'+
-                '<div data-role="header" style="overflow:hidden;">'+
-                 '   <h1>Im a header</h1>'+
-                '<a href="#" data-icon="gear" class="ui-btn-right">Options</a>'+
+                '<div data-role="header">'+
+                 '   <h1>Lista klijenata</h1>'+
+                '<a href="#" data-icon="gear" class="ui-btn-right">Opcije</a>'+
                  '  <div data-role="navbar">'+
                  '      <ul>'+
-                 '          <li><a href="#">One</a></li>'+
-                 '          <li><a href="#">Two</a></li>'+
-                 '          <li><a href="#">Three</a></li>'+
+                 '          <li><a href="#" class="ui-btn-active">Klijenti</a></li>'+
+                 '          <li><a href="#">Brisanje playliste</a></li>'+
                  '      </ul>'+
                  ' </div><!-- /navbar -->'+
                 '</div><!-- /header -->'+
@@ -147,9 +160,8 @@ define(['jquery',
                 '<div data-role="footer">'+
             '   <div data-role="navbar">'+
             '           <ul>'+
-            '               <li><a href="#" data-icon="grid">Summary</a></li>'+
-            '               <li><a href="#" data-icon="star" class="ui-btn-active">Favs</a></li>'+
-            '               <li><a href="#" data-icon="gear">Setup</a></li>'+
+            '               <li><a href="#" data-icon="grid">Zbirno</a></li>'+
+            '               <li><a href="#" data-icon="gear">Dodatno</a></li>'+
             '           </ul>'+
             '       </div><!-- /navbar -->'+
             '   </div><!-- /footer -->'+
@@ -161,7 +173,9 @@ define(['jquery',
                 childView:ClientItemView,
                 collection:Dental.collections.clientCollection,
                 events:{
-                    'pagehide':'_onPageHide'
+                    'pagehide':'_onPageHide',
+                    'click [data-role=header]>[data-role=navbar]>ul>li':function()
+                    {alert('tajsam');}
                 },
 
                 _onPageHide:function(){
@@ -189,12 +203,12 @@ define(['jquery',
             var PlayerItemView = Marionette.ItemView.extend({
                 model:Dental.models.player,
                 template:_.template(
-                    '<a href="#" class="ui-btn ui-btn-icon-left <%=imageStatus%>">'+
+                    '<a href="#" style="padding-right:7.5em" class="ui-btn ui-btn-icon-left <%=imageStatusIcon%>">'+
                     '   <%=NAME%> ' +
                     '</a>'+
-                    '<p class="ui-li-aside"><strong><%=ALIVE_STATUS%></strong></p>'
+                    '<p class="ui-li-aside"><strong><%=STATUS.STATUS_NAME%></strong></p>'
                 ),
-                tagName:'li data-icon="arrow-r"',
+                tagName:'li',
                 events:{
                     "click a":function(e){
                         console.log('ClientItemView click');
@@ -208,16 +222,8 @@ define(['jquery',
 
             var template =
                 // '<header id="header" data-role="header"></header>'+
-                '<div data-role="header" style="overflow:hidden;">'+
-                '   <h1>Im a header</h1>'+
-                '<a href="#" data-icon="gear" class="ui-btn-right">Options</a>'+
-                '  <div data-role="navbar">'+
-                '      <ul data-role="listview" data-split-icon="gear" data-split-theme="b" data-inset="true">'+
-                '          <li><a href="#">One</a></li>'+
-                '          <li><a href="#">Two</a></li>'+
-                '          <li><a href="#">Three</a></li>'+
-                '      </ul>'+
-                ' </div><!-- /navbar -->'+
+                '<div data-role="header">'+
+                '   <h1><%=onlineMsg%> <%=offlineMsg%></h1>'+
                 '</div><!-- /header -->'+
                 '<div id="main" data-role="content">'+
                 '<ul data-role="listview" data-inset="true"></ul>'+
@@ -241,6 +247,33 @@ define(['jquery',
                 collection:Dental.collections.playerCollection,
                 events:{
                     'pagehide':'_onPageHide'
+                },
+
+                serializeData:function(){
+                    var total = _.countBy(this.collection.models, function(model){
+
+                        switch(model.get('STATUS').index) {
+                            case 0:
+                                return 'onlineCount';
+                                break;
+                            case 1:
+                                return 'offlineCount';
+                                break;
+                            case 2:
+                                return 'offlineCount';
+                                break;
+                            default:
+                                return 'Nepoznato';
+                        }
+
+                    });
+
+                    console.log('total', total);
+                    return  {
+                        onlineMsg:total.onlineCount?'Online:'+total.onlineCount:'On',
+                        offlineMsg:total.offlineCount?'Offline:'+total.offlineCount:'Off'
+                    };
+
                 },
 
                 _onPageHide:function(){
