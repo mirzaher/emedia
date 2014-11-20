@@ -20,6 +20,7 @@ define(['jquery',
             Dental.views = {};
             Dental.collections = {};
             Dental.models = {};
+
             this.firstPage = true;
             var player = Backbone.Model.extend({
                 defaults: {
@@ -34,9 +35,9 @@ define(['jquery',
             var client = Backbone.Model.extend({
                 defaults: {
                     id: null,
-                    NAME: undefined
-                },
-                url: appConfig.RESTUri + 'players'
+                    NAME: undefined,
+                    status:"1"
+                }
             });
 
             Dental.models.client = client;
@@ -44,21 +45,32 @@ define(['jquery',
 
             var PlayerCollection = Backbone.Collection.extend({
                 model: player,
-                // url: appConfig.RESTUri +'players/{clientId}',
                 url: function () {
                     return appConfig.RESTUri + 'players/' + this.clientId;
                 },
 
                 comparator:function(model){
                     var status = model.get('STATUS');
-                    return status ? status.index + model.get('NAME'):model.get('NAME');
+                    var daniStr = status.STATUS_NAME.split('d ');
+                    var dani = '';
+
+                    if(_.isArray(daniStr) && daniStr.length == 2)
+                        dani = Dental.helper.pad(daniStr[0], 5) + ' ' + daniStr[1];
+                    else
+                        dani = Dental.helper.pad('', 5) + ' ' + daniStr[0];
+                    //console.log('dani',dani);
+                    return status ? status.index + dani + model.get('NAME')  :model.get('NAME');
                 }
 
             });
 
             var ClientCollection = Backbone.Collection.extend({
+                status:'1',
                 model: client,
-                url: appConfig.RESTUri + 'clients'
+                url: function () {
+                    return appConfig.RESTUri + 'clients/' + this.status;
+                }
+
             });
 
             var PlayerAliveCollection = Backbone.Collection.extend({
@@ -89,6 +101,7 @@ define(['jquery',
                 }).done(function () {
                     $.mobile.loading('show');
                     _.each(Dental.collections.playerCollection.models, function (m) {
+                        $.mobile.loading('show');
                         var model = c.find(function (model) {
                             return model.get('id') == m.get('id');
                         });
@@ -139,13 +152,6 @@ define(['jquery',
 
             });
 
-            /*var ClientsView = Marionette.CollectionView.extend({
-                tagName:'ul data-role="listview" data-inset="true"',
-                childView:ClientItemView,
-                collection:Dental.collections.clientCollection
-            });*/
-
-
             var template =
                // '<header id="header" data-role="header"></header>'+
                 '<div data-role="header">'+
@@ -153,8 +159,8 @@ define(['jquery',
                 '<a href="#" data-icon="gear" class="ui-btn-right">Opcije</a>'+
                  '  <div data-role="navbar">'+
                  '      <ul>'+
-                 '          <li><a href="#" class="ui-btn-active">Klijenti</a></li>'+
-                 '          <li><a href="#">Brisanje playliste</a></li>'+
+                 '          <li data-status="1"><a href="#" class="ui-btn-active">Aktivni</a></li>'+
+                 '          <li data-status="2"><a href="#">Neaktivni</a></li>'+
                  '      </ul>'+
                  ' </div><!-- /navbar -->'+
                 '</div><!-- /header -->'+
@@ -179,31 +185,43 @@ define(['jquery',
                 collection:Dental.collections.clientCollection,
                 events:{
                     'pagehide':'_onPageHide',
-                    'click [data-role=header]>[data-role=navbar]>ul>li':function()
-                    {alert('tajsam');}
+                    'click [data-role=header]>[data-role=navbar]>ul>li':'click'
+                },
+
+                click:function(e){
+                    var self = this;
+                    this.collection.status = $(e.currentTarget).data('status');
+                    this.collection.fetch({
+                        crossDomain: true,
+                        dataType: "jsonp"
+                    }).done(function(){
+                        self.render();
+                    });
+
 
                 },
 
                 _onPageHide:function(){
                     this.remove();
+                },
+
+                onRender:function(a, b, c){
+                    console.log('onRender', a, b, c);
+//                    if(!this.isFirstRender)
+                      $(this.el).trigger('create');
                 }
+
 
             });
 
             Dental.collections.clientCollection.fetch({
-                crossDomain: true,
-                dataType: "jsonp"
-
+            crossDomain: true,
+            dataType: "jsonp"
             }).done(function(){
             self.changePage(new View());
         });
         },
-/*
-*
-* <a href="#">
-         <img src="../_assets/img/album-bb.jpg">
-     <h2>Broken Bells</h2>
-     <p>Broken Bells</p></a>*/
+
         showPlayers: function(clientId) {
             console.log("showPlayers");
             var self = this;
@@ -280,8 +298,8 @@ define(['jquery',
 
                     console.log('total', total);
                     return  {
-                        onlineMsg:total.onlineCount?'Online:'+total.onlineCount:'On',
-                        offlineMsg:total.offlineCount?'Offline:'+total.offlineCount:'Off'
+                        onlineMsg:total.onlineCount?'Online:'+total.onlineCount:'Online:-',
+                        offlineMsg:total.offlineCount?'Offline:'+total.offlineCount:'Offline:-'
                     };
 
                 },
@@ -299,6 +317,12 @@ define(['jquery',
 
             });
 
+            Dental.collections.playerCollection.reset();
+            var view = new PlayersView();
+            view.isFirstRender = true;
+            self.changePage(view);
+            view.isFirstRender = false;
+
             Dental.collections.playerCollection.clientId = clientId;
             self.viewIsClosed = false;
             Dental.collections.playerCollection.fetch({
@@ -307,10 +331,6 @@ define(['jquery',
             }).done(function(){
                 console.log('onCallback');
                 self.alive(function(){
-                    var view = new PlayersView();
-                    view.isFirstRender = true;
-                    self.changePage(view);
-                    view.isFirstRender = false;
                 })
             });
 
@@ -335,7 +355,8 @@ define(['jquery',
                 }
                 $.mobile.changePage($(page.el), {changeHash:false, transition: transition});
             }
-            setTimeout(afterRender, 1000);
+            afterRender();
+            //setTimeout(afterRender, 1000);
         }
 
     };

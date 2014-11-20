@@ -72,6 +72,12 @@ define(['marionette',
 
         Dental.addInitializer(function() {
             console.log('init1');
+            Dental.helper = {};
+            Dental.helper.pad = function(value, size) {
+                var s = String(value);
+                while (s.length < (size || 2)) {s = "0" + s;}
+                return s;
+            };
 
             Dental.AppRouter.main = new mainRouter({
                 controller: mainController
