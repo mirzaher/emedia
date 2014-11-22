@@ -195,8 +195,7 @@ define(['jquery',
                         crossDomain: true,
                         dataType: "jsonp"
                     }).done(function(){
-                        self._renderChildren();
-                        self.triggerMethod('onRender');
+                        self.render();
                     });
 
 
@@ -217,15 +216,7 @@ define(['jquery',
 
             Dental.collections.clientCollection.fetch({
             crossDomain: true,
-            dataType: "jsonp",
-                success:function(a, b, c){
-                    console.log('success',a,b,c);
-                },
-                error:function(a, b, c){
-                    console.log('error',a,b,c);
-                    //alert('error');
-                }
-
+            dataType: "jsonp"
             }).done(function(){
             self.changePage(new View());
         });
@@ -351,7 +342,6 @@ define(['jquery',
 
             $(page.el).attr('data-role', 'page');
             //$(page.el).attr('data-theme', 'b');
-            $(page.el).attr('data-shadow', true);
             //$(page.el).attr('data-content-theme', 'b');
             page.render(afterRender);
 
