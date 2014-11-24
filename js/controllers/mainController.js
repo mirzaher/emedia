@@ -101,7 +101,6 @@ define(['jquery',
                 }).done(function () {
                     $.mobile.loading('show');
                     _.each(Dental.collections.playerCollection.models, function (m) {
-                        $.mobile.loading('show');
                         var model = c.find(function (model) {
                             return model.get('id') == m.get('id');
                         });
@@ -135,7 +134,7 @@ define(['jquery',
             var ClientItemView = Marionette.ItemView.extend({
                 model:Dental.models.client,
                 template:_.template(
-                    '<a href="#"><%=NAME%></a>'
+                    '<a class="ui-btn" href="#"><%=NAME%></a>'
                 ),
                 tagName:'li data-icon="arrow-r"',
                 events:{
@@ -195,7 +194,7 @@ define(['jquery',
                         crossDomain: true,
                         dataType: "jsonp"
                     }).done(function(){
-                        self.render();
+                        //self.render();
                     });
 
 
