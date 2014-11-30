@@ -171,7 +171,7 @@ define(['jquery',
             '   <div data-role="navbar">'+
             '           <ul>'+
             '               <li><a href="#" data-icon="grid">Zbirno</a></li>'+
-            '               <li data-fileId="7740"><a href="jPlayer/examples/pink.flag/demo-02.htm" data-icon="gear">Play</a></li>'+
+            '               <li data-fileId="7740"><a href="jPlayer/examples/pink.flag/demo-01.htm" data-icon="gear">Play</a></li>'+
             '           </ul>'+
             '       </div><!-- /navbar -->'+
             '   </div><!-- /footer -->'+
