@@ -13,14 +13,14 @@
 //<![CDATA[
 $(document).ready(function(){
 
-	new jPlayerPlaylist({
+	var p = new jPlayerPlaylist({
 		jPlayer: "#jquery_jplayer_1",
 		cssSelectorAncestor: "#jp_container_1"
-	}, [
+	}, /*[
 		{
 			title:"Cro Magnon Man",
-			mp3:"http://www.jplayer.org/audio/mp3/TSP-01-Cro_magnon_man.mp3",
-			oga:"http://www.jplayer.org/audio/ogg/TSP-01-Cro_magnon_man.ogg"
+			mp3:"http://server.enamedia.ba/api/stream/10100"
+
 		},
 		{
 			title:"Your Face",
@@ -85,15 +85,46 @@ $(document).ready(function(){
 			mp3:"http://www.jplayer.org/audio/mp3/Miaow-10-Thin-ice.mp3",
 			oga:"http://www.jplayer.org/audio/ogg/Miaow-10-Thin-ice.ogg"
 		}
-	], {
+	],*/ {
 		swfPath: "../../dist/jplayer",
 		supplied: "oga, mp3",
 		wmode: "window",
 		useStateClassSkin: true,
 		autoBlur: false,
 		smoothPlayBar: true,
-		keyEnabled: true
+		keyEnabled: true,
+        preload:"auto"
 	});
+function playTrack(){
+    var index = (p.current + 1 < p.playlist.length) ? p.current + 1 : 0;
+    p.play(index);
+}
+    function addTrack(){
+        var track = {
+                    title:"3019",
+                    mp3:"http://server.enamedia.ba/api/stream/3019"
+
+                };
+        p.add(track);
+
+    };
+
+
+    setInterval(addTrack,3000);
+
+    $.ajaxSetup({
+        crossDomain: true,
+        dataType: "jsonp"}
+    );
+    $.ajax(
+            {
+                url:"http://server.enamedia.ba/api/clients/1",
+                success: function(data) {
+                    console.log("data", data);
+                }
+            }
+    );
+
 });
 //]]>
 </script>

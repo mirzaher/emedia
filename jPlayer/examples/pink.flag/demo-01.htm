@@ -11,30 +11,70 @@
 <script type="text/javascript">
 //<![CDATA[
 $(document).ready(function(){
+    var prvi = null;
+    var drugi = null;
+    function start(){
+        $(prvi).jPlayer("setMedia", {
+            title: "3019",
+            mp3:"http://server.enamedia.ba/api/stream/3019"
+        });
+        $(prvi).jPlayer("play");
+        setTimeout(function(){
 
+            $(drugi).jPlayer("play");
+        },30000)
+    }
+function startdrugi(){
+    $(drugi).jPlayer("setMedia", {
+        title: "3020",
+        mp3:"http://server.enamedia.ba/api/stream/3020"
+    });
+}
 	$("#jquery_jplayer_1").jPlayer({
-		ready: function (event) {
-			$(this).jPlayer("setMedia", {
-				title: "Bubble",
-				m4a: "http://jplayer.org/audio/m4a/Miaow-07-Bubble.m4a",
-				oga: "http://jplayer.org/audio/ogg/Miaow-07-Bubble.ogg"
-			});
-		},
-		swfPath: "../../dist/jplayer",
-		supplied: "m4a, oga",
-		wmode: "window",
-		useStateClassSkin: true,
-		autoBlur: false,
-		smoothPlayBar: true,
-		keyEnabled: true,
-		remainingDuration: true,
-		toggleDuration: true
-	});
+        play: function() {
+            $(this).jPlayer("pauseOthers"); // pause all players except this one.
+        },
+        ready: function (event) {
+            prvi = this;
+            start();
+        },
+        swfPath: "../../dist/jplayer",
+        supplied: "mp3",
+        wmode: "window",
+        useStateClassSkin: true,
+        autoBlur: false,
+        smoothPlayBar: true,
+        keyEnabled: true,
+        remainingDuration: true,
+        toggleDuration: true,
+        preload:"auto"
+    });
+
+    $("#jquery_jplayer").jPlayer({
+        play: function() {
+            $(this).jPlayer("pauseOthers"); // pause all players except this one.
+        },
+        ready: function (event) {
+            drugi = this;
+            startdrugi();
+        },
+        swfPath: "../../dist/jplayer",
+        supplied: "mp3",
+        wmode: "window",
+        useStateClassSkin: true,
+        autoBlur: false,
+        smoothPlayBar: true,
+        keyEnabled: true,
+        remainingDuration: true,
+        toggleDuration: true,
+        preload:"auto"
+    });
 });
 //]]>
 </script>
 </head>
 <body>
+<div id="jquery_jplayer" class="jp-jplayer"></div>
 <div id="jquery_jplayer_1" class="jp-jplayer"></div>
 <div id="jp_container_1" class="jp-audio" role="application" aria-label="media player">
 	<div class="jp-type-single">
