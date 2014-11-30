@@ -171,7 +171,7 @@ define(['jquery',
             '   <div data-role="navbar">'+
             '           <ul>'+
             '               <li><a href="#" data-icon="grid">Zbirno</a></li>'+
-            '               <li data-fileId="7740"><a href="#" data-icon="gear">Play</a></li>'+
+            '               <li data-fileId="7740"><a href="jPlayer/examples/pink.flag/demo-02.htm" data-icon="gear">Play</a></li>'+
             '           </ul>'+
             '       </div><!-- /navbar -->'+
             '   </div><!-- /footer -->'+
@@ -207,17 +207,8 @@ define(['jquery',
                     var self = this;
                     var id = $(e.currentTarget).data('fileId');
                     var src = "http://server.enamedia.ba/api/stream/10100";
-                    function playSound(el,soundfile) {
-                        if (el.mp3) {
-                            if(el.mp3.paused) el.mp3.play();
-                            else el.mp3.pause();
-                        } else {
-                            el.mp3 = new Audio(soundfile);
-                            el.mp3.play();
-                        }
-                    }
-
-                    playSound(this,src);
+                    var url ="/jPlayer/examples/pink.flag/demo-02.htm";
+                    //Backbone.history.navigate(url, true);
 
                 },
 
