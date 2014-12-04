@@ -37,6 +37,8 @@ require.config({
         json2: '../lib/json2',
         'jquery.mobile': '../lib/jquery/mobile/jquery.mobile-1.4.5',
         "jquery.mobile-config": '../js/jquery.mobile-config',
+        "jquery.jplayer":"../lib/jplayer/jquery.jplayer",
+        "jplayer.playlist":"../lib/jplayer/add-on/jplayer.playlist",
         underscore: '../lib/backbone/underscore',
         "underscore.extension": '../lib/backbone/underscore.extension',
         backbone: '../lib/backbone/backbone',

@@ -10,8 +10,8 @@ define(['jquery',
     'bootstrap',
     'marionette',
     'layouts/mainLayout',
-    'typeahead', 'jquery.mobile'
-], function($, Backbone, Bootstrap, Marionette, MainLayout){
+    'typeahead', 'jquery.mobile','jquery.jplayer','jplayer.playlist'
+], function($, Backbone, Bootstrap, Marionette){
 
     return {
         start: function () {
@@ -40,8 +40,17 @@ define(['jquery',
                 }
             });
 
+            var track = Backbone.Model.extend({
+                defaults: {
+                    id: null,
+                    START_TIME: undefined,
+                    TRACKNAME:""
+                }
+            });
+
             Dental.models.client = client;
             Dental.models.player = player;
+            Dental.models.track = track;
 
             var PlayerCollection = Backbone.Collection.extend({
                 model: player,
@@ -79,10 +88,20 @@ define(['jquery',
                 }
             });
 
+
+            var TrackCollection = Backbone.Collection.extend({
+                playerId:'',
+                model: track,
+                url: function () {
+                    return appConfig.RESTUri + 'playlist/' + this.playerId;
+                }
+
+            });
+
             Dental.collections.playerCollection = new PlayerCollection();
             Dental.collections.clientCollection = new ClientCollection();
             Dental.collections.playerAliveCollection = new PlayerAliveCollection();
-
+            Dental.collections.trackCollection = new TrackCollection();
             setInterval(self.alive, 30000);
 
 
@@ -171,7 +190,6 @@ define(['jquery',
             '   <div data-role="navbar">'+
             '           <ul>'+
             '               <li><a href="#" data-icon="grid">Zbirno</a></li>'+
-            '               <li data-fileId="7740"><a href="jPlayer/examples/pink.flag/demo-01.htm" data-icon="gear">Play</a></li>'+
             '           </ul>'+
             '       </div><!-- /navbar -->'+
             '   </div><!-- /footer -->'+
@@ -189,7 +207,7 @@ define(['jquery',
                 },
 
                 click:function(e){
-                    var self = this;
+                    //var self = this;
                     this.collection.status = $(e.currentTarget).data('status');
                     this.collection.fetch({
                         crossDomain: true,
@@ -233,6 +251,123 @@ define(['jquery',
         });
         },
 
+        showPlaylist:function(playerId){
+            var self = this;
+            var TrackItemView = Marionette.ItemView.extend({
+                model:Dental.models.client,
+                template:_.template(
+                    '<a class="ui-btn" href="#"><%=TRACKNAME%></a>'
+                ),
+                tagName:'li'
+            });
+
+            var template =
+                // '<header id="header" data-role="header"></header>'+
+                '<div data-role="header">'+
+                '</div><!-- /header -->'+
+                '<div id="main" data-role="content">'+
+                '   <div id="jquery_jplayer_1" class="jp-jplayer"></div>'+
+                '   <div id="jp_container_1" class="jp-video-270p" role="application" aria-label="media player">'+
+                '       <div class="jp-type-playlist">'+
+                '           <div class="jp-gui jp-interface">'+
+                '               <div class="jp-volume-controls">'+
+                '                   <button class="jp-mute" role="button" tabindex="0">mute</button>'+
+                '                   <button class="jp-volume-max" role="button" tabindex="0">max volume</button>'+
+                '                   <div class="jp-volume-bar">'+
+                '                       <div class="jp-volume-bar-value"></div>'+
+                '                   </div>'+
+                '               </div>'+
+                '           <div class="jp-controls-holder">'+
+                '               <div class="jp-controls">'+
+                '                   <button class="jp-previous" role="button" tabindex="0">previous</button>'+
+                '                   <button class="jp-play" role="button" tabindex="0">play</button>'+
+                '                   <button class="jp-stop" role="button" tabindex="0">stop</button>'+
+                '                   <button class="jp-next" role="button" tabindex="0">next</button>'+
+                '               </div>'+
+                '           <div class="jp-progress">'+
+                '               <div class="jp-seek-bar">'+
+                '                   <div class="jp-play-bar"></div>'+
+                '               </div>'+
+                '           </div>'+
+                '           <div class="jp-current-time" role="timer" aria-label="time">&nbsp;</div>'+
+                '           <div class="jp-duration" role="timer" aria-label="duration">&nbsp;</div>'+
+           /*     '           <div class="jp-toggles">'+
+                '               <button class="jp-repeat" role="button" tabindex="0">repeat</button>'+
+                '               <button class="jp-shuffle" role="button" tabindex="0">shuffle</button>'+
+                '           </div>'+*/
+                '       </div>'+
+                '   </div>'+
+                '   <div class="jp-playlist">'+
+                '       <ul>'+
+                '           <li>&nbsp;</li>'+
+                '       </ul>'+
+                '   </div>'+
+                '   <div class="jp-no-solution">'+
+                '       <span>Update Required</span>'+
+                '           To play the media you will need to either update your browser to a recent version or update your <a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>.'+
+                '   </div>'+
+                '</div>'+
+  //              '</div>'+
+//                '</div>'+
+                '<footer data-role="footer" class="footer" data-position="fixed">'+
+                '   <div data-role="footer">'+
+                '   </div><!-- /footer -->'+
+                '</footer>';
+
+            var View = Backbone.Marionette.CompositeView.extend({
+                template : _.template(template),
+                //childViewContainer : '#main ul',
+                //childView:TrackItemView,
+                //collection:Dental.collections.trackCollection,
+
+                _onPageHide:function(){
+                    this.remove();
+                },
+
+                startPlay: function(){
+                    var tracks = [];
+                    _.each(Dental.collections.trackCollection.models,function(m){
+                        tracks.push({
+                            title: m.get("TRACKNAME"),
+                            mp3:"http://server.enamedia.ba/api/stream/"+ m.get("FILE_ID")
+                        })
+                    });
+                    console.log("tracks", tracks.length);
+                    var p = new jPlayerPlaylist({
+                        jPlayer: "#jquery_jplayer_1",
+                        cssSelectorAncestor: "#jp_container_1"
+                    },tracks
+                     ,{
+                        //swfPath: "../../dist/jplayer",
+                        supplied: "mp3",
+                        wmode: "window",
+                        useStateClassSkin: true,
+                        autoBlur: false,
+                        smoothPlayBar: true,
+                        keyEnabled: true,
+                        preload:"auto"
+                    });
+
+                },
+
+                onRender:function(a, b, c){
+                    var self = this;
+                    console.log('onRender', a, b, c);
+                    $(this.el).trigger('create');
+                    //setTimeout(this.startPlay, 5000);
+                }
+
+            });
+
+            Dental.collections.trackCollection.playerId = playerId;
+            Dental.collections.trackCollection.fetch({
+                crossDomain: true,
+                dataType: "jsonp"
+            }).done(function(){
+                self.changePage(new View());
+            });
+        },
+
         showPlayers: function(clientId) {
             console.log("showPlayers");
             var self = this;
@@ -248,6 +383,12 @@ define(['jquery',
                 events:{
                     "click a":function(e){
                         console.log('ClientItemView click');
+                        e.stopPropagation();
+                        e.preventDefault();
+                        var url = '#playlist/'+this.model.get('id');
+                        console.log('ClientItemView click', url);
+
+                        Backbone.history.navigate(url, true);
                     }
                 },
                 initialize: function() {
@@ -367,6 +508,8 @@ define(['jquery',
                 $.mobile.changePage($(page.el), {changeHash:false, transition: transition});
             }
             afterRender();
+            if (page.startPlay)
+                page.startPlay();
             //setTimeout(afterRender, 1000);
         }
 

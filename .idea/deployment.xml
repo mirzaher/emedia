@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" serverName="server">
+  <component name="PublishConfigData" serverName="enamedia.ba">
     <serverData>
-      <paths name="server">
+      <paths name="enamedia.ba">
         <serverdata>
           <mappings>
             <mapping deploy="/" local="$PROJECT_DIR$" web="/" />

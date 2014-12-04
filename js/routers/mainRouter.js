@@ -19,7 +19,8 @@ define([
 
         appRoutes: {
             "": "showHome",
-            "players/:clientId": "showPlayers"
+            "players/:clientId": "showPlayers",
+            "playlist/:playerId": "showPlaylist"
         },
 
         before: function( route ) {
