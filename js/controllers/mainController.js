@@ -256,7 +256,7 @@ define(['jquery',
             var TrackItemView = Marionette.ItemView.extend({
                 model:Dental.models.client,
                 template:_.template(
-                    '<a class="ui-btn" href="#"><%=TRACKNAME%></a>'
+                    '<a class="ui-btn" href="#"><%=FILE_ID%></a>'
                 ),
                 tagName:'li'
             });
@@ -328,7 +328,7 @@ define(['jquery',
                     var tracks = [];
                     _.each(Dental.collections.trackCollection.models,function(m){
                         tracks.push({
-                            title: m.get("TRACKNAME"),
+                            title: m.get("FILE_ID"),
                             mp3:"http://server.enamedia.ba/api/stream/"+ m.get("FILE_ID")
                         })
                     });
