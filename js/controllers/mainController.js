@@ -259,21 +259,25 @@ define(['jquery',
 
 
             });
+            try {
 
-            Dental.collections.clientCollection.fetch({
-                crossDomain: true,
-                dataType: "jsonp",
-                success: function() {
-                    alert("Dental.collections.clientCollection.fetch done");
-                    self.changePage(new View());
-                },
-                error: function(a, b, c) {
-                    alert("Dental.collections.clientCollection.fetch error"+a + b + c);
-                    self.changePage(new View());
-                },
+                Dental.collections.clientCollection.fetch({
+                    crossDomain: true,
+                    dataType: "jsonp",
+                    success: function() {
+                        alert("Dental.collections.clientCollection.fetch done");
+                        self.changePage(new View());
+                    },
+                    error: function(a, b, c) {
+                        alert("Dental.collections.clientCollection.fetch error" + a + b + c);
+                        self.changePage(new View());
+                    },
 
-            });
-            
+                });
+
+            } catch (err) {
+            alert("Dental.collections.clientCollection catch" + err.message);
+            }
             alert("Dental.collections.clientCollection.fetch");
 
         },
