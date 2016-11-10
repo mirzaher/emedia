@@ -10,7 +10,7 @@ Pristup playerima		</description>
 		<author href="www.enamedia.ba" email="haris.herenda@enamedia.ba">
 Haris Herenda
 		</author>
-		<preference name="phonegap-version" value="cli-5.2.0" />
+<!--		<preference name="phonegap-version" value="cli-5.2.0" />-->
 		<preference name="orientation" value="default" />
 		<preference name="fullscreen" value="true" />
 		<preference name="target-device" value="universal" />
