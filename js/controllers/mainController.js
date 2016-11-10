@@ -262,10 +262,20 @@ define(['jquery',
 
             Dental.collections.clientCollection.fetch({
                 crossDomain: true,
-                dataType: "jsonp"
-            }).done(function() {
-                self.changePage(new View());
+                dataType: "jsonp",
+                success: function() {
+                    alert("Dental.collections.clientCollection.fetch done");
+                    self.changePage(new View());
+                },
+                error: function(a, b, c) {
+                    alert("Dental.collections.clientCollection.fetch error"+a + b + c);
+                    self.changePage(new View());
+                },
+
             });
+            
+            alert("Dental.collections.clientCollection.fetch");
+
         },
 
         showPlaylist: function(playerId) {
