@@ -70,6 +70,7 @@ define([
     // The "app" dependency is passed in as "App"
     // Again, the other dependencies passed in are not "AMD" therefore don't pass a parameter to this function
     console.log('Dental create');
+    alert("Start" );
     Dental = new Marionette.Application();
     Dental.Behaviors = {};
     Marionette.Behaviors.behaviorsLookup = function() {
@@ -96,8 +97,10 @@ define([
         // The "app" dependency is passed in as "App"
         // Again, the other dependencies passed in are not "AMD" therefore don't pass a parameter to this function
         console.log('Dental create 2');
+        alert("Start2" );
         $(function(){
             console.log('Dom ready');
+            alert("Start dom ready" );
             $(document).bind('keydown', function(event) {
                 if (event.keyCode == 27) {
                     // Prevent default (disable the back button behavior)
